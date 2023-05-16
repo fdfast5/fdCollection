@@ -12,6 +12,8 @@ services:
      - "8000:8000"
     tty: true
     stdin_open: true
+    depends_on:
+     - db
 
   client:
     build:
@@ -27,3 +29,16 @@ services:
      - server
     environment:
      - NODE_ENV=development
+  
+  db:
+   image: mysql:5.7
+   container_name: mysql
+   environment:
+     MYSQL_DATABASE: "fd_collection"
+     MYSQL_USER: fd
+     MYSQL_PASSWORD: fdfast
+     MYSQL_ROOT_PASSWORD: fdfastrootstrong
+   volumes:
+     - ./database:/var/lib/mysql
+   ports:
+     - 3306:3306
