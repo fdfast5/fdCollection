@@ -7,8 +7,8 @@ class User(models.Model):
     user_login      = models.CharField(max_length=256)
     user_name       = models.CharField(max_length=256, null=True)
     valid_flag      = models.BooleanField(default=True)
-    created_at      = models.DateTimeField()
-    updated_at      = models.DateTimeField()
+    created_at      = models.DateTimeField(auto_now_add=True)
+    updated_at      = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'user'
@@ -23,8 +23,8 @@ class Reward(models.Model):
     reward_img_path     = models.CharField(max_length=256, null=True)
     reward_audio_path   = models.CharField(max_length=256, null=True)
     valid_flag          = models.BooleanField(default=True)
-    created_at          = models.DateTimeField()
-    updated_at          = models.DateTimeField()
+    created_at          = models.DateTimeField(auto_now_add=True)
+    updated_at          = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'reward'
@@ -35,8 +35,8 @@ class Collection(models.Model):
     twitch_reward_id    = models.CharField(max_length=256)
     get_date            = models.DateTimeField()
     valid_flag          = models.BooleanField(default=True)
-    created_at          = models.DateTimeField()
-    updated_at          = models.DateTimeField()
+    created_at          = models.DateTimeField(auto_now_add=True)
+    updated_at          = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'collection'
