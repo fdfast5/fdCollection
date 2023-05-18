@@ -93,7 +93,7 @@ export default {
                 sessionStorage.setItem('token', res.data.token);
                 // this.$session.start();
                 // this.$session.set('token', res.data.token);
-                router.push('/collectionlist');
+                router.push('/collectionadmin');
             // eslint-disable-next-line
             }).catch(e => {
                 this.loading = false;
