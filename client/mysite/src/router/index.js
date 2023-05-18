@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import Auth from '@/components/pages/Auth'
 import CollectionAdmin from '@/components/pages/CollectionAdmin'
 import UserLogin from '@/components/pages/UserLogin'
+import CollectionList from '@/components/pages/CollectionList'
 
 const routes = [
   {
@@ -24,6 +25,11 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: UserLogin
+  },
+  {
+    path: '/collectionlist',
+    name: 'CollectionList',
+    component: CollectionList
   },
   {
     path: '/about',
