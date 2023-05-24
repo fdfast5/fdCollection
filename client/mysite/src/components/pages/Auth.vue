@@ -73,7 +73,6 @@ export default {
         rules: {
         username: [
             v => !!v || "ユーザー名は必須です",
-            // v => (v && v.length > 4) || "ユーザー名は5文字以上でなければなりません",
             v => /^[a-z0-9_]+$/.test(v) || "許可されていない文字が入力されています"
         ],
         password: [
@@ -91,10 +90,7 @@ export default {
             this.loading = true;
             axios.post('http://localhost:8000/auth/', this.credentials).then(res => {
                 sessionStorage.setItem('token', res.data.token);
-                // this.$session.start();
-                // this.$session.set('token', res.data.token);
                 router.push('/collectionadmin');
-            // eslint-disable-next-line
             }).catch(e => {
                 this.loading = false;
                 alert('ユーザー名もしくはパスワード、または両方が間違っています');
