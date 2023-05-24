@@ -1,10 +1,14 @@
 from twitchAPI.twitch import Twitch
 from twitchAPI.helper import first
 import asyncio
+import environ
+
+env = environ.Env()
+env.read_env('.env')
 
 async def twitch_example(access_token):
-    app_id = 'kfka7cipofpyncxov9lrhu0l6qnmjx'
-    app_secret = 'wxitlteic087gzag4wg0o2g40miy1a'
+    app_id = env('TWITCH_APP_ID')
+    app_secret = env('TWITCH_APP_SECRET')
     #Twitch developersで取得したクライアントIDとシークレットキーを入力する
     twitch = await Twitch(app_id, app_secret)
     await twitch.set_user_authentication(access_token, [], access_token)
