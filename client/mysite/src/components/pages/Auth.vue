@@ -93,7 +93,7 @@ export default {
                 router.push('/collectionadmin');
             }).catch(e => {
                 this.loading = false;
-                alert('ユーザー名もしくはパスワード、または両方が間違っています');
+                alert('ユーザー名もしくはパスワード、または両方が間違っています' + e);
             })
             }
         }
