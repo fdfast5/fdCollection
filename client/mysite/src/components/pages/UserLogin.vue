@@ -21,8 +21,8 @@ export default {
          * リダイレクト時、access_tokenを取得
          * ------------------------------------- */
         twitchLogin() {
-            let client_id = 'kfka7cipofpyncxov9lrhu0l6qnmjx'; // envで持つ想定
-            let redirect_uri = 'http://localhost:8080/#/login'; // envで持つ想定
+            let client_id = process.env.VUE_APP_CLIENT_ID; // envで保持
+            let redirect_uri = process.env.VUE_APP_REDIRECT_URL; // envで保持
             window.location.href = 'https://id.twitch.tv/oauth2/authorize?client_id=' + client_id + '&redirect_uri=' + encodeURIComponent(redirect_uri) + '&response_type=token'
         },
         /** ---------------------------------
