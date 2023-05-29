@@ -15,7 +15,7 @@ async def twitch_example(access_token):
     #自身のTwitchユーザー名を入力
     #ここは表示名ではないことに注意
     user = await first(twitch.get_users())
-    #ユーザーidを取得する
+    #ユーザー情報を取得する
     await twitch.close()
     return user
 

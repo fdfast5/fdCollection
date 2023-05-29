@@ -10,8 +10,18 @@ from .serializers import UserSerializer, RewardSerializer, CollectionSerializer
 
 # 管理画面、報酬リスト取得
 class RewardList(generics.ListAPIView):
-    queryset = Reward.objects.all()
     serializer_class = RewardSerializer
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        params = [
+            {
+                'id': 1,
+                'title': 'テストデータ'
+            }
+        ]
+        return JsonResponse(params, safe=False)
+        
 
 # 管理画面、報酬編集
 class RewardRetrieveUpdate(generics.RetrieveUpdateAPIView):
