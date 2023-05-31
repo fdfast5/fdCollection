@@ -1,0 +1,62 @@
+[
+    {
+        "model": "api.reward",
+        "fields": {
+            "twitch_reward_id": "abcde",
+            "reward_title": "ガチャ親テスト",
+            "reward_parent_flag": true,
+            "reward_parent_id": null,
+            "reward_content": "ガチャ本体テストです。",
+            "reward_img_path": null,
+            "reward_audio_path": null,
+            "valid_flag": true,
+            "created_at": "2019-06-04T15:43:29.899",
+            "updated_at": "2019-06-04T15:43:29.899"
+        }
+    },
+    {
+        "model": "api.reward",
+        "fields": {
+            "twitch_reward_id": "fghij",
+            "reward_title": "ガチャ子供テスト1",
+            "reward_parent_flag": false,
+            "reward_parent_id": 1,
+            "reward_content": "ガチャ子供テスト1です。",
+            "reward_img_path": null,
+            "reward_audio_path": null,
+            "valid_flag": true,
+            "created_at": "2019-06-04T15:43:29.899",
+            "updated_at": "2019-06-04T15:43:29.899"
+        }
+    },
+    {
+        "model": "api.reward",
+        "fields": {
+            "twitch_reward_id": "klmno",
+            "reward_title": "ガチャ子供テスト2",
+            "reward_parent_flag": false,
+            "reward_parent_id": 1,
+            "reward_content": "ガチャ子供テスト2です。",
+            "reward_img_path": null,
+            "reward_audio_path": null,
+            "valid_flag": true,
+            "created_at": "2019-06-04T15:43:29.899",
+            "updated_at": "2019-06-04T15:43:29.899"
+        }
+    },
+    {
+        "model": "api.reward",
+        "fields": {
+            "twitch_reward_id": "pqrst",
+            "reward_title": "ガチャ親テスト2",
+            "reward_parent_flag": true,
+            "reward_parent_id": null,
+            "reward_content": "ガチャ本体テスト2です。",
+            "reward_img_path": null,
+            "reward_audio_path": null,
+            "valid_flag": true,
+            "created_at": "2019-06-04T15:43:29.899",
+            "updated_at": "2019-06-04T15:43:29.899"
+        }
+    }
+  ]
