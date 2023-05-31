@@ -2,31 +2,53 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
 from django.http import JsonResponse
+from django.core.serializers import serialize
+import json
 
 from .twitch_api import twitch_return
 from .models import User, Reward, Collection
 from .serializers import UserSerializer, RewardSerializer, CollectionSerializer
 # Create your views here.
 
-# 管理画面、報酬リスト取得
-class RewardList(generics.ListAPIView):
-    serializer_class = RewardSerializer
+# 管理画面、報酬リスト取得、更新
+class RewardList(generics.RetrieveUpdateAPIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        params = [
-            {
-                'id': 1,
-                'title': 'テストデータ'
-            }
-        ]
-        return JsonResponse(params, safe=False)
+        # クエリパラメータからTwitch APIで使用するアクセストークンがあれば
+        # TwitchAPIから報酬リストを取得
+        if request.query_params.get('access_token'):
+            access_token = request.query_params.get('access_token')
+            twitch = twitch_return(access_token, 'reward')
+            # print(twitch)
         
+        res = Reward.objects.all()
+        serialized_data = serialize("json", res)
+        reward_list = json.loads(serialized_data)
 
-# 管理画面、報酬編集
-class RewardRetrieveUpdate(generics.RetrieveUpdateAPIView):
-    queryset = Reward.objects.all()
-    serializer_class = RewardSerializer
+        return JsonResponse(reward_list, safe=False)
+    
+    def post(self, request):
+        data = request.data
+        pk = data['id']
+        reward_title = data['reward_title']
+        reward_parent_flag = data['reward_parent_flag']
+        reward_parent_id = data['reward_parent_id']
+        reward_content = data['reward_content']
+        valid_flag = data['valid_flag']
+
+        Reward.objects.filter(pk=pk).update(
+            reward_title = reward_title,
+            reward_parent_flag = reward_parent_flag,
+            reward_parent_id = reward_parent_id,
+            reward_content = reward_content,
+            valid_flag = valid_flag
+        )
+
+        params = {
+            'id': pk
+        }
+        return JsonResponse(params)
 
 # ユーザーログイン後、ユーザー取得（登録）
 class UserListCreate(generics.ListCreateAPIView):
@@ -38,7 +60,7 @@ class UserListCreate(generics.ListCreateAPIView):
         access_token = request.query_params.get('access_token')
 
         # TwitchAPIで連携したユーザー情報を取得
-        twitch = twitch_return(access_token)
+        twitch = twitch_return(access_token, 'user')
         # Twitch連携一意ユーザーID
         res_user_id = twitch.id
         # Twitch連携ログインID
