@@ -1,10 +1,10 @@
 <template>
     <v-container grid-list-md>
         <v-layout row wrap align-center justify-center fill-height>
-            <v-flex xs12 sm8 lg4 md5>
+            <v-flex class="width-100">
                 <v-card class="login-card">
                     <v-card-title>
-                    <span class="headline">Login to fdCollections</span>
+                    <span class="headline">fd-Collection 管理画面ログイン</span>
                     </v-card-title>
 
                     <v-spacer/>
@@ -26,7 +26,7 @@
                     </v-layout>
 
 
-                    <v-form v-else ref="form" v-model="valid" lazy-validation>
+                    <v-form ref="form" v-model="valid" lazy-validation>
                         <v-container>
 
                         <v-text-field
@@ -49,7 +49,7 @@
                         />
 
                         </v-container>
-                        <v-btn class="pink white--text" :disabled="!valid" @click="login">Login</v-btn>
+                        <v-btn class="width-100 white--text" :disabled="!valid" @click="login">Login</v-btn>
 
                     </v-form>
 
@@ -100,3 +100,9 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+    .width-100{
+        width: 100%;
+    }
+</style>

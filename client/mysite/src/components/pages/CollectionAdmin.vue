@@ -2,7 +2,8 @@
     <v-app>
         <v-app-bar
             color="blue-grey"
-            dark app height="50">fd-collection管理画面
+            dark app height="50"
+            class="pl-3">fd-collection管理画面
         </v-app-bar>
         <v-card
             class="mx-4 mt-16">
