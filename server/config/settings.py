@@ -170,3 +170,6 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+MEDIA_URL = '/media/' # 画像ファイルを参照するためのURL
+MEDIA_ROOT = BASE_DIR / "media" # 画像保存先ディレクトリ

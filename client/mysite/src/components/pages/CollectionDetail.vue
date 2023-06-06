@@ -8,9 +8,22 @@
             no-click-animation
             >
             <v-card class="pa-3">
-                <v-card-title>詳細</v-card-title>
+                <v-card-title class="card-title-frame">
+                    <span class="card-title">詳細</span>
+                </v-card-title>
                     <v-form>
                         <v-container>
+                            <v-row no-gutters>
+                                <v-col cols="4">
+                                    <div>TwitchID</div>
+                                </v-col>
+                                <v-col cols="8">
+                                    <v-text-field
+                                        readonly
+                                        v-model="detailData.twitch_reward_id"
+                                    />
+                                </v-col>
+                            </v-row>
                             <v-row no-gutters>
                                 <v-col cols="4">
                                     <div>タイトル</div>
@@ -53,10 +66,21 @@
                                 <v-col cols="4">
                                     <div>報酬画像</div>
                                 </v-col>
-                                <v-col cols="8">
+                                <v-col cols="4">
                                     <v-text-field
+                                        readonly
                                         v-model="detailData.reward_img_path"
                                     />
+                                </v-col>
+                                <v-col cols="4">
+                                    <input
+                                        style="display: none"
+                                        accept=".jpg,.png,.image"
+                                        type="file"
+                                        ref="input"
+                                        v-on:change="fileSelected"
+                                    />
+                                    <v-btn class="ml-3" color="primary" @click="imgBtnclick">画像選択</v-btn>
                                 </v-col>
                             </v-row>
                             <v-row no-gutters>
@@ -80,7 +104,8 @@
                         </v-container>
                     </v-form>
                     <v-btn
-                        @click="updateDetailData()"
+                        class="mb-4"
+                        @click="confirm()"
                     >
                         保存
                     </v-btn>
@@ -91,11 +116,16 @@
                     </v-btn>
             </v-card>
         </v-dialog>
+        <ConfirmDialog
+            :open="confirmDialog"
+            @cancel="confirmDialog = !confirmDialog"
+            @save="updateDetailData"
+        />
     </v-row>
 </template>
 
 <script>
-
+import ConfirmDialog from './ConfirmDialog';
 import axios from 'axios';
 
 export default {
@@ -104,11 +134,17 @@ export default {
         'field',
         'pk'
     ],
+    components: {
+        ConfirmDialog
+    },
     data () {
         return {
             detailTitle: '詳細',
             detailData: {},
-            detailPk: null
+            detailPk: null,
+            fileInfo: '',
+            confirmDialog: false,
+            error: ''
         };
     },
     computed: {
@@ -134,11 +170,51 @@ export default {
             this.detailData = this.field;
             this.detailPk = this.pk;
         },
+        imgBtnclick () {
+            this.$refs.input.click();
+        },
+        /** ----------------------------------------------
+         * 画像選択時に常に画像を取得
+         * ---------------------------------------------- */
+        fileSelected (event) {
+            this.fileInfo = event.target.files[0];
+            const files = this.$refs.input.files[0];
+            if (!files) {
+                return;
+            }
+            this.detailData.reward_img_path = files.name;
+        },
+        confirm() {
+            this.confirmDialog = true;
+        },
+        /** ----------------------------------------------
+         * 画像アップロード
+         * ---------------------------------------------- */
+        FileUpload: async function () {
+            const formData = new FormData();
+            formData.append('image_data', this.fileInfo);
+            formData.append('twitch_reward_id', this.detailData.twitch_reward_id);
+    
+            await axios.post(
+                'http://localhost:8000/api/image/', formData
+            )
+            .then(res => {
+                if (res.data.status) {
+                    this.detailData.reward_img_path = res.data.url;
+                }
+            })
+            .catch(e => {
+                this.error = e;
+            })
+        },
         /** -------------------------------------
          * 報酬内容更新
          * ------------------------------------ */
-        updateDetailData() {
-            axios.post(
+        async updateDetailData() {
+            if (this.fileInfo) {
+                await this.FileUpload();
+            }
+            await axios.post(
                 'http://localhost:8000/api/reward/',
                 {
                     id: this.detailPk,
@@ -146,16 +222,24 @@ export default {
                     reward_parent_flag: this.detailData.reward_parent_flag,
                     reward_parent_id: this.detailData.reward_parent_id,
                     reward_content: this.detailData.reward_content,
+                    reward_img_path: this.detailData.reward_img_path,
                     valid_flag: this.detailData.valid_flag
                 }
             )
             .then(
                 res => {
-                    console.log(JSON.stringify(res.data, null, 2));
+                    this.detailData = {};
+                    if (res.data) {
+                        //確認ダイアログ閉じる
+                        this.confirmDialog = false;
+                        //詳細ダイアログ閉じる
+                        this.$emit('close');
+                    }
                 }
             )
             .catch(
                 e => {
+                    this.detailData = {};
                     alert(e);
                 }
             )
@@ -164,8 +248,19 @@ export default {
          * このダイアログを閉じる処理
          * ---------------------------------------------- */
         closeDialog () {
+            this.detailData = {};
             this.$emit('close');
         }
     }
 };
 </script>
+
+<style scoped>
+    .card-title-frame {
+        background-color: #424242;
+        border-radius: 4px;
+    }
+    .card-title {
+        color: #fff;
+    }
+</style>

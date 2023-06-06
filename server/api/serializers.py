@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Reward, Collection
+from .models import User, Reward, Collection, Image
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -13,4 +13,9 @@ class RewardSerializer(serializers.ModelSerializer):
 class CollectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Collection
+        fields = '__all__'
+
+class ImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Image
         fields = '__all__'

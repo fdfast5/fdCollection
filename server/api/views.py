@@ -6,8 +6,8 @@ from django.core.serializers import serialize
 import json
 
 from .twitch_api import twitch_return
-from .models import User, Reward, Collection
-from .serializers import UserSerializer, RewardSerializer, CollectionSerializer
+from .models import User, Reward, Collection, Image
+from .serializers import UserSerializer, RewardSerializer, CollectionSerializer, ImageSerializer
 # Create your views here.
 
 # 管理画面、報酬リスト取得、更新
@@ -35,6 +35,7 @@ class RewardList(generics.RetrieveUpdateAPIView):
         reward_parent_flag = data['reward_parent_flag']
         reward_parent_id = data['reward_parent_id']
         reward_content = data['reward_content']
+        reward_img_path = data['reward_img_path']
         valid_flag = data['valid_flag']
 
         Reward.objects.filter(pk=pk).update(
@@ -42,6 +43,7 @@ class RewardList(generics.RetrieveUpdateAPIView):
             reward_parent_flag = reward_parent_flag,
             reward_parent_id = reward_parent_id,
             reward_content = reward_content,
+            reward_img_path = reward_img_path,
             valid_flag = valid_flag
         )
 
@@ -87,3 +89,30 @@ class UserListCreate(generics.ListCreateAPIView):
 class CollectionListCreate(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = CollectionSerializer
+
+# 画像アップロード
+class ImageCreate(generics.ListCreateAPIView):
+    serializer_class = ImageSerializer
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        data = request.data
+        twitch_reward_id = data['twitch_reward_id']
+        image_data = data['image_data']
+        if image_data is not None:
+            img = Image.objects.create(
+                twitch_reward_id = twitch_reward_id,
+                image_file_name = image_data
+            )
+
+            params = {
+                'url': img.image_file_name.url,
+                'status': True
+            }
+            return JsonResponse(params)
+        
+        params = {
+            'url': '',
+            'status': False
+        }
+        return JsonResponse(params)

@@ -40,3 +40,19 @@ class Collection(models.Model):
 
     class Meta:
         db_table = 'collection'
+
+# 画像テーブル
+class Image(models.Model):
+    twitch_reward_id    = models.CharField(max_length=10)
+    image_file_name     = models.ImageField(null=True)
+    valid_flag          = models.BooleanField(default=True)
+    created_at          = models.DateTimeField(auto_now_add=True)
+    updated_at          = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'image'    
+
+# 音声テーブル  
+# class Voice(models.Model):
+#     twitch_reward_id    = models.CharField(max_length=10)
+#     sound               = models.
