@@ -34,6 +34,9 @@
                 </tbody>
             </v-table>
         </v-card>
+        <v-container>
+            <v-btn color="primary" @click="twitchAlignment">Twitch連携</v-btn>
+        </v-container>
         <CollectionDetail
             :dialog="collectionDetailDialog"
             :field="collectionDetailData"
@@ -116,7 +119,16 @@ export default {
          * -------------------- */
         closeDetail() {
             this.collectionDetailDialog = false;
-        }
+        },
+        /** --------------------------------------
+         * Twitch連携（Twitch内でログインを行う）
+         * リダイレクト時、access_tokenを取得
+         * ------------------------------------- */
+        twitchAlignment() {
+            let client_id = process.env.VUE_APP_CLIENT_ID; // envで保持
+            let redirect_uri = process.env.VUE_APP_REDIRECT_URL_ADMIN; // envで保持
+            window.location.href = 'https://id.twitch.tv/oauth2/authorize?client_id=' + client_id + '&redirect_uri=' + encodeURIComponent(redirect_uri) + '&response_type=token'
+        },
     }
 };
 </script>

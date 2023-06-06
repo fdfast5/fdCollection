@@ -6,7 +6,7 @@ import environ
 env = environ.Env()
 env.read_env('.env')
 
-async def twitch_example(access_token, select_api):
+async def twitch_example(access_token, select_api, user_id):
     app_id = env('TWITCH_APP_ID')
     app_secret = env('TWITCH_APP_SECRET')
     #Twitch developersで取得したクライアントIDとシークレットキーを入力する
@@ -16,15 +16,15 @@ async def twitch_example(access_token, select_api):
     if select_api == 'user':
         result = await first(twitch.get_users())
     elif select_api == 'reward':
-        result = await twtich.get_custom_reward()
+        result = await twitch.get_custom_reward(user_id)
     #ユーザー情報を取得する
     await twitch.close()
     return result
 
-async def main(access_token, select_api):
-    coro = twitch_example(access_token, select_api)
+async def main(access_token, select_api, user_id):
+    coro = twitch_example(access_token, select_api, user_id)
     value = await coro
     return value
 
-def twitch_return(access_token, select_api):
-    return asyncio.run(main(access_token, select_api))
+def twitch_return(access_token, select_api, user_id):
+    return asyncio.run(main(access_token, select_api, user_id))

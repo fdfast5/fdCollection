@@ -19,8 +19,9 @@ class RewardList(generics.RetrieveUpdateAPIView):
         # TwitchAPIから報酬リストを取得
         if request.query_params.get('access_token'):
             access_token = request.query_params.get('access_token')
-            twitch = twitch_return(access_token, 'reward')
-            # print(twitch)
+            user_info = twitch_return(access_token, 'user', None)
+            user_id = user_info.id
+            twitch = twitch_return(access_token, 'reward', user_id)
         
         res = Reward.objects.all()
         serialized_data = serialize("json", res)
@@ -62,7 +63,7 @@ class UserListCreate(generics.ListCreateAPIView):
         access_token = request.query_params.get('access_token')
 
         # TwitchAPIで連携したユーザー情報を取得
-        twitch = twitch_return(access_token, 'user')
+        twitch = twitch_return(access_token, 'user', None)
         # Twitch連携一意ユーザーID
         res_user_id = twitch.id
         # Twitch連携ログインID
