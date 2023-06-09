@@ -86,7 +86,7 @@ export default {
             const result = location.hash.match(/access_token=(.*)&scope/);
             if (result) {
                 // アクセストークンがあれば
-                // Twitch API: 報酬リストを取得し最新情報に更新
+                // Twitch API: 報酬リスト、対象ブロードキャスターの報酬引き換えリストを取得し最新情報に更新
                 const token = result[1];
                 this.params.access_token = token;
             }
