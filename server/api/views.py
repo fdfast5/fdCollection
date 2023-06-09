@@ -21,11 +21,58 @@ class RewardList(generics.RetrieveUpdateAPIView):
             access_token = request.query_params.get('access_token')
             user_info = twitch_return(access_token, 'user', None)
             user_id = user_info.id
+            # 報酬リスト
             twitch = twitch_return(access_token, 'reward', user_id)
+            # 報酬引き換えリスト
+            # collection = twitch_return(access_token, 'history', user_id)
         
-        res = Reward.objects.all()
+        # クエリパラメータにユーザー画面からのアクセスを判断するフラグがあれば親報酬のみ取得
+        # 親ガチャリスト画面
+        if request.query_params.get('user_access'):
+            res = Reward.objects.filter(reward_parent_flag=True)
+            count = Reward.objects.filter(reward_parent_flag=True).count()
+        # ガチャ毎報酬一覧画面
+        elif request.query_params.get('parent_id'):
+            user_id = request.query_params.get('user_id')
+            parent_id = request.query_params.get('parent_id')
+            offset = request.query_params.get('offset')
+            limit = request.query_params.get('limit')
+
+            res = Reward.objects.filter(reward_parent_id=parent_id).all()[int(offset):int(limit)]
+            count = Reward.objects.filter(reward_parent_id=parent_id).count()
+            collectionRes = Collection.objects.filter(twitch_user_id=user_id)
+        else:
+            res = Reward.objects.all()
+            count = Reward.objects.all().count()
+        
         serialized_data = serialize("json", res)
         reward_list = json.loads(serialized_data)
+
+        # 対象ガチャ報酬一覧画面の場合、表示/非表示データ整形
+        if request.query_params.get('parent_id'):
+            collection_serialize = serialize("json", collectionRes)
+            collection_list = json.loads(collection_serialize)
+
+            for name in reward_list:
+                # Collectionテーブルに対象ユーザーのデータがなければ全て非表示
+                if not collection_list:
+                    name['close_flag'] = True
+                else:
+                    name['close_flag'] = True
+
+                    # Collectionテーブルに対象データのtwitch_reward_idが一致したら表示させる
+                    for collection_name in collection_list:
+                        if collection_name['fields']['twitch_reward_id'] == name['fields']['twitch_reward_id']:
+                            name['close_flag'] = False
+                            break
+                # レコード数追加
+                name['count'] = count
+                # URL追加
+                # データがなければロック画像
+                if name['close_flag'] == True:
+                    name['url'] = 'http://localhost:8000/media/istockphoto-936681148-1024x1024.jpg'
+                else:
+                    name['url'] = 'http://localhost:8000' + str(name['fields']['reward_img_path'])
 
         return JsonResponse(reward_list, safe=False)
     

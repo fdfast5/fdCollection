@@ -4,6 +4,7 @@ import Auth from '@/components/pages/Auth'
 import CollectionAdmin from '@/components/pages/CollectionAdmin'
 import UserLogin from '@/components/pages/UserLogin'
 import CollectionList from '@/components/pages/CollectionList'
+import CollectionPage from '@/components/pages/CollectionPage'
 
 const routes = [
   {
@@ -30,6 +31,11 @@ const routes = [
     path: '/collectionlist',
     name: 'CollectionList',
     component: CollectionList
+  },
+  {
+    path: '/collectionpage',
+    name: 'CollectionPage',
+    component: CollectionPage
   },
   {
     path: '/about',
