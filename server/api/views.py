@@ -6,8 +6,8 @@ from django.core.serializers import serialize
 import json
 
 from .twitch_api import twitch_return
-from .models import User, Reward, Collection, Image
-from .serializers import UserSerializer, RewardSerializer, CollectionSerializer, ImageSerializer
+from .models import User, Reward, Collection, Image, Audio
+from .serializers import UserSerializer, RewardSerializer, ImageSerializer, AudioSerializer
 # Create your views here.
 
 # 管理画面、報酬リスト取得、更新
@@ -67,12 +67,14 @@ class RewardList(generics.RetrieveUpdateAPIView):
                             break
                 # レコード数追加
                 name['count'] = count
-                # URL追加
+                # 画像URL追加
                 # データがなければロック画像
                 if name['close_flag'] == True:
-                    name['url'] = 'http://localhost:8000/media/istockphoto-936681148-1024x1024.jpg'
+                    name['image_url'] = 'http://localhost:8000/media/istockphoto-936681148-1024x1024.jpg'
                 else:
-                    name['url'] = 'http://localhost:8000' + str(name['fields']['reward_img_path'])
+                    name['image_url'] = 'http://localhost:8000' + str(name['fields']['reward_img_path'])
+                # 音声URL整形
+                name['audio_url'] = 'http://localhost:8000' + str(name['fields']['reward_audio_path'])
 
         return JsonResponse(reward_list, safe=False)
     
@@ -84,6 +86,8 @@ class RewardList(generics.RetrieveUpdateAPIView):
         reward_parent_id = data['reward_parent_id']
         reward_content = data['reward_content']
         reward_img_path = data['reward_img_path']
+        reward_audio_path = data['reward_audio_path']
+        rarity = data['rarity']
         valid_flag = data['valid_flag']
 
         Reward.objects.filter(pk=pk).update(
@@ -92,6 +96,8 @@ class RewardList(generics.RetrieveUpdateAPIView):
             reward_parent_id = reward_parent_id,
             reward_content = reward_content,
             reward_img_path = reward_img_path,
+            reward_audio_path = reward_audio_path,
+            rarity = rarity,
             valid_flag = valid_flag
         )
 
@@ -133,11 +139,6 @@ class UserListCreate(generics.ListCreateAPIView):
         }
         return JsonResponse(params)
 
-# コレクション取得（登録）
-class CollectionListCreate(generics.ListCreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = CollectionSerializer
-
 # 画像アップロード
 class ImageCreate(generics.ListCreateAPIView):
     serializer_class = ImageSerializer
@@ -155,6 +156,33 @@ class ImageCreate(generics.ListCreateAPIView):
 
             params = {
                 'url': img.image_file_name.url,
+                'status': True
+            }
+            return JsonResponse(params)
+        
+        params = {
+            'url': '',
+            'status': False
+        }
+        return JsonResponse(params)
+
+# 音声アップロード
+class AudioCreate(generics.ListCreateAPIView):
+    serializer_class = AudioSerializer
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        data = request.data
+        twitch_reward_id = data['twitch_reward_id']
+        audio_data = data['audio_data']
+        if audio_data is not None:
+            audio = Audio.objects.create(
+                twitch_reward_id = twitch_reward_id,
+                audio_file_name = audio_data
+            )
+
+            params = {
+                'url': audio.audio_file_name.url,
                 'status': True
             }
             return JsonResponse(params)

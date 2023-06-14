@@ -36,6 +36,23 @@
                             </v-row>
                             <v-row no-gutters>
                                 <v-col cols="4">
+                                    <div>レアリティ</div>
+                                </v-col>
+                                <v-col cols="8">
+                                    <v-radio-group
+                                        v-model="detailData.rarity"
+                                    >
+                                        <v-radio
+                                            v-for="flag in raritySelectBox"
+                                            :key="flag.id"
+                                            :label="flag.rarityName"
+                                            :value="flag.value"
+                                        />
+                                    </v-radio-group>
+                                </v-col>
+                            </v-row>
+                            <v-row no-gutters>
+                                <v-col cols="4">
                                     <div>親報酬フラグ</div>
                                 </v-col>
                                 <v-col cols="8">
@@ -77,20 +94,31 @@
                                         style="display: none"
                                         accept=".jpg,.png,.image"
                                         type="file"
-                                        ref="input"
+                                        ref="imageInput"
                                         v-on:change="fileSelected"
                                     />
-                                    <v-btn class="ml-3" color="primary" @click="imgBtnclick">画像選択</v-btn>
+                                    <v-btn class="ml-3" color="primary" @click="imgBtnClick">画像選択</v-btn>
                                 </v-col>
                             </v-row>
                             <v-row no-gutters>
                                 <v-col cols="4">
                                     <div>報酬音声</div>
                                 </v-col>
-                                <v-col cols="8">
+                                <v-col cols="4">
                                     <v-text-field
+                                        readonly
                                         v-model="detailData.reward_audio_path"
                                     />
+                                </v-col>
+                                <v-col cols="4">
+                                    <input
+                                        style="display: none"
+                                        accept=".mp3"
+                                        type="file"
+                                        ref="audioInput"
+                                        v-on:change="audioFileSelected"
+                                    />
+                                    <v-btn class="ml-3" color="primary" @click="audioBtnClick">音声選択</v-btn>
                                 </v-col>
                             </v-row>
                             <v-row no-gutters>
@@ -143,8 +171,15 @@ export default {
             detailData: {},
             detailPk: null,
             fileInfo: '',
+            audioFileInfo: '',
             confirmDialog: false,
-            error: ''
+            error: '',
+            raritySelectBox: [
+                {"id": 1, "rarityName": "ノーマル（N）", "value": 1},
+                {"id": 2, "rarityName": "レア（R）", "value": 2},
+                {"id": 3, "rarityName": "スーパーレア（SR）", "value": 3},
+                {"id": 4, "rarityName": "ウルトラレア（UR）", "value": 4}
+            ]
         };
     },
     computed: {
@@ -170,19 +205,33 @@ export default {
             this.detailData = this.field;
             this.detailPk = this.pk;
         },
-        imgBtnclick () {
-            this.$refs.input.click();
+        imgBtnClick () {
+            this.$refs.imageInput.click();
+        },
+        audioBtnClick () {
+            this.$refs.audioInput.click();
         },
         /** ----------------------------------------------
          * 画像選択時に常に画像を取得
          * ---------------------------------------------- */
         fileSelected (event) {
             this.fileInfo = event.target.files[0];
-            const files = this.$refs.input.files[0];
+            const files = this.$refs.imageInput.files[0];
             if (!files) {
                 return;
             }
             this.detailData.reward_img_path = files.name;
+        },
+        /** ----------------------------------------------
+         * 音声選択時に常に音声を取得
+         * ---------------------------------------------- */
+        audioFileSelected (event) {
+            this.audioFileInfo = event.target.files[0];
+            const files = this.$refs.audioInput.files[0];
+            if (!files) {
+                return;
+            }
+            this.detailData.reward_audio_path = files.name;
         },
         confirm() {
             this.confirmDialog = true;
@@ -190,7 +239,7 @@ export default {
         /** ----------------------------------------------
          * 画像アップロード
          * ---------------------------------------------- */
-        FileUpload: async function () {
+        async FileUpload () {
             const formData = new FormData();
             formData.append('image_data', this.fileInfo);
             formData.append('twitch_reward_id', this.detailData.twitch_reward_id);
@@ -207,12 +256,35 @@ export default {
                 this.error = e;
             })
         },
+        /** ----------------------------------------------
+         * 音声アップロード
+         * ---------------------------------------------- */
+        async audioFileUpload () {
+            const formData = new FormData();
+            formData.append('audio_data', this.audioFileInfo);
+            formData.append('twitch_reward_id', this.detailData.twitch_reward_id);
+    
+            await axios.post(
+                'http://localhost:8000/api/audio/', formData
+            )
+            .then(res => {
+                if (res.data.status) {
+                    this.detailData.reward_audio_path = res.data.url;
+                }
+            })
+            .catch(e => {
+                this.error = e;
+            })
+        },
         /** -------------------------------------
          * 報酬内容更新
          * ------------------------------------ */
         async updateDetailData() {
             if (this.fileInfo) {
                 await this.FileUpload();
+            }
+            if (this.audioFileInfo) {
+                await this.audioFileUpload();
             }
             await axios.post(
                 'http://localhost:8000/api/reward/',
@@ -223,6 +295,8 @@ export default {
                     reward_parent_id: this.detailData.reward_parent_id,
                     reward_content: this.detailData.reward_content,
                     reward_img_path: this.detailData.reward_img_path,
+                    reward_audio_path: this.detailData.reward_audio_path,
+                    rarity: this.detailData.rarity,
                     valid_flag: this.detailData.valid_flag
                 }
             )

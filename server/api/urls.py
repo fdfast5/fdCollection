@@ -6,7 +6,7 @@ urlpatterns = [
 
     path('user/', UserListCreate.as_view()),
 
-    path('collection/', CollectionListCreate.as_view()),
+    path('image/', ImageCreate.as_view()),
 
-    path('image/', ImageCreate.as_view())
+    path('audio/', AudioCreate.as_view())
 ]

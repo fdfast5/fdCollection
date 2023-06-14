@@ -22,6 +22,7 @@ class Reward(models.Model):
     reward_content      = models.CharField(max_length=256, null=True)
     reward_img_path     = models.CharField(max_length=256, null=True)
     reward_audio_path   = models.CharField(max_length=256, null=True)
+    rarity              = models.IntegerField(null=True)
     valid_flag          = models.BooleanField(default=True)
     created_at          = models.DateTimeField(auto_now_add=True)
     updated_at          = models.DateTimeField(auto_now_add=True)
@@ -44,7 +45,7 @@ class Collection(models.Model):
 # 画像テーブル
 class Image(models.Model):
     twitch_reward_id    = models.CharField(max_length=10)
-    image_file_name     = models.ImageField(null=True)
+    image_file_name     = models.ImageField(upload_to="image/", null=True)
     valid_flag          = models.BooleanField(default=True)
     created_at          = models.DateTimeField(auto_now_add=True)
     updated_at          = models.DateTimeField(auto_now_add=True)
@@ -53,6 +54,12 @@ class Image(models.Model):
         db_table = 'image'    
 
 # 音声テーブル  
-# class Voice(models.Model):
-#     twitch_reward_id    = models.CharField(max_length=10)
-#     sound               = models.
+class Audio(models.Model):
+    twitch_reward_id    = models.CharField(max_length=10)
+    audio_file_name     = models.FileField(upload_to="audio/", null=True)
+    valid_flag          = models.BooleanField(default=True)
+    created_at          = models.DateTimeField(auto_now_add=True)
+    updated_at          = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'audio'
