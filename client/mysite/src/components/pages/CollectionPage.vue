@@ -2,7 +2,7 @@
   <v-app>
     <v-container fluid>
       <div class="text-h2 font-weight-bold d-flex justify-center mb-3">fd-collection</div>
-      <v-row class="collection-list">
+      <v-row v-if="desserts.length > 0" class="collection-list">
         <v-col
           v-for="item in desserts"
           :key="item.pk"
@@ -13,13 +13,16 @@
             :disabled="item.close_flag"
             @click="openRewardDetail(item)">
             <v-img
-              :src="item.url"
+              :src="item.image_url"
               class="white--text align-end"
               height="200px"
             >
             </v-img>
           </v-card>
         </v-col>
+      </v-row>
+      <v-row v-else>
+        <div class="text-h4 mx-auto my-4">{{ errorMessage }}</div>
       </v-row>
       <v-pagination
         v-model="page"
@@ -51,7 +54,8 @@ export default {
         page: 1,
         pageCount: 0,
         rewardDetailDialog: false,
-        rewardDetailData: null
+        rewardDetailData: null,
+        errorMessage: ''
     }),
     mounted() {
         this.getCapsuleToys();
@@ -72,8 +76,13 @@ export default {
             .then(
                 res => {
                     this.desserts = res.data;
-                    let count = this.desserts[0].count;
-                    this.pageCount = Math.ceil(count / 9);
+                    if (this.desserts.length > 0) {
+                      let count = this.desserts[0].count;
+                      this.pageCount = Math.ceil(count / 9);
+                    } else {
+                      this.errorMessage = '現在準備中'
+                    }
+                    
                 }
             )
             .catch(
