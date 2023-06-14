@@ -58,5 +58,27 @@
             "created_at": "2019-06-04T15:43:29.899",
             "updated_at": "2019-06-04T15:43:29.899"
         }
+    },
+    {
+        "model": "api.collection",
+        "fields": {
+            "twitch_user_id": "691060159",
+            "twitch_reward_id": "fghij",
+            "get_date": "2023-06-01",
+            "valid_flag": true,
+            "created_at": "2019-06-04T15:43:29.899",
+            "updated_at": "2019-06-04T15:43:29.899"
+        }
+    },
+    {
+        "model": "api.collection",
+        "fields": {
+            "twitch_user_id": "691060159",
+            "twitch_reward_id": "klmno",
+            "get_date": "2023-06-02",
+            "valid_flag": true,
+            "created_at": "2019-06-04T15:43:29.899",
+            "updated_at": "2019-06-04T15:43:29.899"
+        }
     }
   ]
